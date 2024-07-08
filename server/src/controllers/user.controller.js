@@ -74,7 +74,7 @@ const sendOtp = asyncHandler(async (req, res) => {
   const expiredOtp = AddMinutesToDate();
   console.log(YOUROTP);
   const UserEmail = user.email;
-  await SendEmail(UserEmail, "OTP", `Your OTP is ${YOUROTP}`);
+  // await SendEmail(UserEmail, "OTP", `Your OTP is ${YOUROTP}`);
   const SendOtp = await User.findOneAndUpdate(
     { email: UserEmail },
     { verifyCode: YOUROTP, verifyCodeExpiryDate: expiredOtp }
@@ -83,18 +83,43 @@ const sendOtp = asyncHandler(async (req, res) => {
   return res.status(201).json(new ApiResponse(200, "Send Otp"));
 });
 const accountverify = asyncHandler(async (req, res) => {
-  const { email, otp } = req.body;
-  console.log(email, otp);
-  if (!email || !otp) {
-    throw new ApiError(400, "All fields are required");
+  const id = req.user?._id;
+  const { otp } = req.body;
+  if (!otp) {
+    throw new ApiError(200, "OTP are required");
   }
-  const existedUser = await User.findOne({ email });
-  console.log("existedUser", existedUser.account_email_Verifi_otp);
-  if (existedUser.account_email_Verifi_otp == otp) {
-    await User.findOneAndUpdate({ email }, { account_email_Verified: true });
+
+  const user = await User.findById(id).select(
+    "email account_email_Verified verifyCode verifyCodeExpiryDate"
+  );
+  if (!user) {
+    throw new ApiError(400, "Somthing went Wrong!");
+  }
+  console.log(user);
+  const UserEmail = user.email;
+
+  if (user.verifyCodeExpiryDate >= new Date().getTime()) {
+    if (user.verifyCode == otp) {
+      await User.findOneAndUpdate(
+        { email: UserEmail },
+        { account_email_Verified: true }
+      );
+    } else {
+      throw new ApiError(400, "plese enter valid OTP");
+    }
   } else {
-    return res.status(201).json(new ApiResponse(200, "Invalid Otp"));
+    throw new ApiError(400, "Your OTP expired");
   }
+
+  // const existedUser = await User.findOne({ email });
+  // console.log("existedUser", existedUser.account_email_Verifi_otp);
+  // if (existedUser.account_email_Verifi_otp == otp) {
+  //   await User.findOneAndUpdate({ email }, { account_email_Verified: true });
+  // } else {
+  //   return res.status(201).json(new ApiResponse(200, "Invalid Otp"));
+  // }
+  // return res.status(201).json(new ApiResponse(200, "Otp Verify"));
+
   return res.status(201).json(new ApiResponse(200, "Otp Verify"));
 });
 

@@ -22,7 +22,7 @@ import { verifyJWT } from "../middlewares/auth.middleware.js";
 const router = Router();
 
 router.route("/register").post(registerUser);
-router.route("/accountverify").post(accountverify);
+router.route("/accountverify").post(verifyJWT,accountverify);
 router.route("/login").post(loginUser);
 router.route("/email-send").get(verifyJWT, SendEmailForVerifacation);
 
