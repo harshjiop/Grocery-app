@@ -21,7 +21,6 @@ const userSchema = new Schema(
       trim: true,
       index: true,
     },
-
     avatar: {
       public_id: {
         type: String, // cloudinary
@@ -34,8 +33,16 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
-    account_email_Verifi_otp: {
-      type: Number, //OTP save
+    verifyCode: {
+      type: String, //OTP save
+    },
+    verifyCodeExpiryDate: {
+      type: String, // OTP expring date
+    },
+    mobile_number: {
+      type: Number,
+      minlenth: 10,
+      maxlenth: 10,
     },
     password: {
       type: String,
@@ -62,13 +69,12 @@ userSchema.methods.generateAccessToken = async function () {
     {
       _id: this._id,
       email: this.email,
-
       fullName: this.fullName,
     },
     process.env.ACCESS_TOKEN_SECRET,
     {
       // expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
-      expiresIn: "5s",
+      expiresIn: "1000000s",
     }
   );
 };

@@ -12,7 +12,7 @@ const TransPorter = nodemailer.createTransport({
 });
 
 
-const SendEmail = async (email, Subject, html) => {
+const SendEmail = async (email, Subject, PlaneText) => {
   await TransPorter.sendMail({
     from: {
       name: "Harshvardhan kumar",
@@ -20,7 +20,7 @@ const SendEmail = async (email, Subject, html) => {
     },
     to: email,
     subject: Subject,
-    html: html,
+    text: PlaneText,
   });
 };
 

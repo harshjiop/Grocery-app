@@ -15,99 +15,91 @@ import { TransPorter, SendEmail } from "../utils/Transpoter.js";
 import { ResetPasswordTemplate } from "../utils/EmailTemplate/ResetPasswordTemplate.js";
 import { PasswordUpdateTemplate } from "../utils/EmailTemplate/PasswordUpdateTemplate.js";
 import { AccountVerifactionSucessFull } from "../utils/EmailTemplate/AccountVerifactionSucessFull.js";
+import { AddMinutesToDate, generateOTP } from "../utils/Otpgenrate.js";
 
-const generateAccessAndRefereshTokens = async (userId) => {
-  try {
-    const user = await User.findById(userId);
-    const accessToken = await user.generateAccessToken();
-    const refreshToken = await user.generateRefreshToken();
-
-    user.refreshToken = refreshToken;
-    await user.save({ validateBeforeSave: false });
-    return { accessToken, refreshToken };
-  } catch (error) {
-    throw new ApiError(
-      500,
-      "Somthing went wrong while generating referesh and access token "
-    );
-  }
+const options = {
+  httpOnly: true,
+  secure: true,
 };
 
 const registerUser = asyncHandler(async (req, res) => {
-  // get user details from frontend
-  // validation - not empty
-  // check if user already exists: username, email
-  // check for images, check for avatar
-  // upload them to cloudinary, avatar
-  // create user object - create entry in db
-  // remove password and refresh token field from response
-  // check for user creation
-  // return res
+  const { firstName, lastName, email, mobile_number, password } = req.body;
 
-  const { fullName, email, username, password } = req.body;
-  //   console.log("email: ", email);
-
-  if (!fullName || !email || !username || !password) {
+  if (!firstName || !lastName || !email || !mobile_number || !password) {
     throw new ApiError(400, "All fields are required");
   }
-  const FullNameSplite = fullName.split(" ");
-  const FistName = FullNameSplite[0];
-  const LastName = FullNameSplite[1];
-  const avtar = `https://cloud.appwrite.io/v1/avatars/initials?name=${FistName}+${LastName}&width=80&height=80&project=console`;
+  let firstNameavtar = firstName[0];
+  let LastNameavtar = lastName[0];
+  const avtar = `https://cloud.appwrite.io/v1/avatars/initials?name=${firstNameavtar}+${LastNameavtar}&width=80&height=80&project=console`;
 
-  const existedUser = await User.findOne({
-    $or: [{ username }, { email }],
-  });
+  const existedUser = await User.findOne({ email });
 
   if (existedUser) {
-    throw new ApiError(409, "User with email or username already exists");
+    throw new ApiError(400, "User with email already exists");
   }
 
   const user = await User.create({
-    fullName,
+    firstName,
+    lastName,
     email,
     avatar: {
       public_id: "",
       url: avtar,
     },
+    mobile_number,
     password,
-    username: username.toLowerCase(),
   });
 
-  const createdUser = await User.findById(user._id).select(
-    "-password -refreshToken"
-  );
-
-  if (!createdUser) {
-    throw new ApiError(500, "Something went wrong while registering the user");
-  }
-
-  const createStoreLink = await Page.create({
-    owner: user._id,
-    title: "Store",
-    url: `/store/@${username.toLowerCase()}`,
-    thumbnail: {
-      url: "https://ik.imagekit.io/8fgpvoiai/Link%20Stock/icons8-store-50_V9zSkurcu.png?updatedAt=1708748358266",
-    },
-  });
-
-  if (!createStoreLink) {
-    throw new ApiError(500, "Something went wrong while registering the user");
-  }
+  const accessToken = await user.generateAccessToken();
 
   return res
     .status(201)
-    .json(new ApiResponse(200, createdUser, "User registered Successfully"));
+    .cookie("accessToken", accessToken, options)
+    .json(
+      new ApiResponse(
+        200,
+        { user, accessToken },
+        "User registered Successfully"
+      )
+    );
+});
+
+const sendOtp = asyncHandler(async (req, res) => {
+  const id = req.user?._id;
+  const user = await User.findById(id);
+  if (!user) {
+    throw new ApiError(400, "Somthing went Wrong!");
+  }
+  const YOUROTP = generateOTP();
+  const expiredOtp = AddMinutesToDate();
+  console.log(YOUROTP);
+  const UserEmail = user.email;
+  await SendEmail(UserEmail, "OTP", `Your OTP is ${YOUROTP}`);
+  const SendOtp = await User.findOneAndUpdate(
+    { email: UserEmail },
+    { verifyCode: YOUROTP, verifyCodeExpiryDate: expiredOtp }
+  );
+
+  return res.status(201).json(new ApiResponse(200, "Send Otp"));
+});
+const accountverify = asyncHandler(async (req, res) => {
+  const { email, otp } = req.body;
+  console.log(email, otp);
+  if (!email || !otp) {
+    throw new ApiError(400, "All fields are required");
+  }
+  const existedUser = await User.findOne({ email });
+  console.log("existedUser", existedUser.account_email_Verifi_otp);
+  if (existedUser.account_email_Verifi_otp == otp) {
+    await User.findOneAndUpdate({ email }, { account_email_Verified: true });
+  } else {
+    return res.status(201).json(new ApiResponse(200, "Invalid Otp"));
+  }
+  return res.status(201).json(new ApiResponse(200, "Otp Verify"));
 });
 
 const loginUser = asyncHandler(async (req, res) => {
-  // req body -> data
-  // username or email
-  //find the user
-  //password check
-  //access and referesh token
-  //send cookie
-  const { email, username, password } = req.body;
+  const { email, password } = req.body;
   if (!email && !username) {
     throw new ApiError(400, "Username or email is requair");
   }
@@ -739,6 +731,7 @@ const isEmailVerified = asyncHandler(async (req, res) => {
 
 export {
   registerUser,
+  accountverify,
   loginUser,
   logoutUser,
   refreshAccessToken,
@@ -751,4 +744,8 @@ export {
   ForgetPasswordUpdate,
   SendEmailForVerifacation,
   isEmailVerified,
+  sendOtp,
 };
+
+// 1720412432193
+// 1719508071243
