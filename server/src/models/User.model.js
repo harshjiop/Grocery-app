@@ -48,6 +48,11 @@ const userSchema = new Schema(
       type: String,
       required: [true, "Password is required"],
     },
+    role: {
+      type: String,
+      default: "USER",
+      required: true,
+    },
   },
   {
     timestamps: true,
@@ -70,6 +75,7 @@ userSchema.methods.generateAccessToken = async function () {
       _id: this._id,
       email: this.email,
       fullName: this.fullName,
+      role: this.role,
     },
     process.env.ACCESS_TOKEN_SECRET,
     {
