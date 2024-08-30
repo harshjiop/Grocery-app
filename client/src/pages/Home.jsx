@@ -5,7 +5,11 @@ import {
   IoFastFoodSharp,
   IoMenu,
   IoClose,
+  FaRegUserCircle,
+  MdLogout,
 } from "../icons/index";
+import { useDispatch, useSelector } from "react-redux";
+import { login, logout } from "../store/authSlice";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 
@@ -20,14 +24,56 @@ import "swiper/css/navigation";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import { useEffect, useState } from "react";
 import { products } from "../data/products";
+import Category from "../services/category";
 
 export default function Home() {
   const [category, setCategory] = useState(0);
+  const [categoriesList, setCategoriesList] = useState([]);
   const [isNavbarActive, setIsNavbarActive] = useState(false);
+  const dispatch = useDispatch();
+  const userStatus = useSelector((state) => state.auth.status);
 
   useEffect(() => {
     console.log("category is", category);
   }, [category]);
+
+  useEffect(() => {
+    try {
+      const localUserData = localStorage.getItem("userData");
+
+      if (localUserData) {
+        const parsedLocalUserData = JSON.parse(localUserData);
+        dispatch(login({ userData: parsedLocalUserData }));
+      }
+    } catch (error) {
+      console.log("error is ", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const localToken = localStorage.getItem("token");
+
+        if (localToken) {
+          const response = await Category.getAllCategory(localToken);
+          if (response) {
+            setCategoriesList(response.data)
+            console.log("data of category ", response);
+          }
+        }
+      } catch (error) {
+        console.log("error is ", error);
+      }
+    })();
+  }, []);
+
+  function handleLogout() {
+    console.log("i am clicked");
+    dispatch(logout());
+    localStorage.setItem("token", "");
+    localStorage.setItem("userData", "");
+  }
 
   return (
     <div className="relative ">
@@ -109,7 +155,7 @@ export default function Home() {
             </div>
 
             {/* button container */}
-            <div className="flex justify-between items-center gap-1 md:gap-3">
+            <div className="flex justify-between items-center gap-1 md:gap-4">
               {/* small screen navbar button */}
               <button
                 onClick={() => {
@@ -120,7 +166,7 @@ export default function Home() {
                 <IoMenu />
               </button>
               {/* wishlist container */}
-              <div className="relative">
+              <div className="relative selection:bg-transparent">
                 <p className="absolute top-0 right-0 border-[2px] border-white  w-[1rem] text-center rounded-full text-[10px] bg-slate-200/90 ">
                   1
                 </p>
@@ -130,7 +176,7 @@ export default function Home() {
               </div>
 
               {/* cart container */}
-              <div className="relative ">
+              <div className="relative selection:bg-transparent">
                 <IoCartOutline className="text-5xl cursor-pointer" />
                 <p className="absolute top-1 right-0 border-[2px] border-white  w-[1rem] text-center rounded-full text-[10px] bg-slate-200/90 ">
                   1
@@ -138,9 +184,22 @@ export default function Home() {
               </div>
 
               {/* login container */}
-              <button className="py-2 px-4 font-bold bg-green-500  md:text-xl text-white rounded text-center">
-                <a href="/login"> Login</a>
-              </button>
+              {userStatus ? (
+                <FaRegUserCircle className="text-4xl cursor-pointer hover:text-green-400 ease-linear duration-300" />
+              ) : (
+                <button className="py-2 px-4 font-bold bg-green-500  md:text-xl text-white rounded text-center">
+                  <a href="/login"> Login</a>
+                </button>
+              )}
+
+              {userStatus ? (
+                <>
+                  <MdLogout
+                    onClick={() => handleLogout()}
+                    className="text-4xl cursor-pointer hover:text-red-400 ease-linear duration-300"
+                  />
+                </>
+              ) : null}
             </div>
           </nav>
         </div>
