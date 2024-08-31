@@ -1,4 +1,36 @@
+import { useForm } from "react-hook-form";
+import authentication from "../services/authentication";
+import { useDispatch } from "react-redux";
+import { login } from "../store/authSlice";
+import { useNavigate } from "react-router-dom";
+
 export default function Login() {
+  const { handleSubmit, register } = useForm();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  async function onSubmit(data) {
+    try {
+      const response = await authentication.login({ ...data });
+
+      if (response) {
+        const userData = response.data;
+
+        if (userData) {
+          console.log("user Data", userData);
+          const localUserData = JSON.stringify(userData.user);
+          localStorage.setItem("userData", localUserData);
+          localStorage.setItem("token", userData.accessToken);
+          dispatch(login({ userData }));
+          navigate('/')
+          
+        }
+      }
+    } catch (error) {
+      console.log("error is ", error);
+    }
+  }
+
   return (
     <div className=" h-screen w-full flex ">
       {/* left section */}
@@ -23,17 +55,21 @@ export default function Login() {
 
         {/* lower container */}
         <div className="h-[50%] lg:h-[70%] w-full">
-          <form className="flex flex-col h-full w-[70%] mx-auto  gap-4">
-            {/* username input container */}
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="flex flex-col h-full w-[70%] mx-auto  gap-4"
+          >
+            {/* Email input container */}
             <div className="flex flex-col">
-              <label className="font-normal" htmlFor="userName">
-                Username
+              <label className="font-normal" htmlFor="email">
+                Email
               </label>
               <input
                 className="outline-none p-2 border-2 rounded border-green-500 h-10"
-                type="text"
-                name="userName"
-                id="userName"
+                type="email"
+                name="email"
+                id="email"
+                {...register("email", { required: true })}
               />
             </div>
 
@@ -50,6 +86,7 @@ export default function Login() {
                 type="password"
                 name="password"
                 id="password"
+                {...register("password", { required: true })}
               />
             </div>
 
