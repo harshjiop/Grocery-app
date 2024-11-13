@@ -10,6 +10,7 @@ import {
 } from "../icons/index";
 import { useDispatch, useSelector } from "react-redux";
 import { login, logout } from "../store/authSlice";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 
@@ -58,7 +59,7 @@ export default function Home() {
         if (localToken) {
           const response = await Category.getAllCategory(localToken);
           if (response) {
-            setCategoriesList(response.data)
+            setCategoriesList(response.data);
             console.log("data of category ", response);
           }
         }
@@ -118,9 +119,9 @@ export default function Home() {
       {/* hero container */}
       <div className="h-screen w-full   z-0 overflow-x-hidden">
         {/* navbar container */}
-        <div className="md:w-[80%] w-[95%] h-[10%]  mx-auto my-auto overflow-x-hidden">
+        <div className="md:w-[80%] w-[95%] h-[10%]  mx-auto my-auto overflow-x-hidden flex justify-center items-center">
           {/* nav section */}
-          <nav className=" w-full  flex justify-between items-center">
+          <nav className=" w-full flex justify-between items-center">
             {/* logo */}
             <div className="">
               <img
@@ -177,15 +178,19 @@ export default function Home() {
 
               {/* cart container */}
               <div className="relative selection:bg-transparent">
-                <IoCartOutline className="text-5xl cursor-pointer" />
-                <p className="absolute top-1 right-0 border-[2px] border-white  w-[1rem] text-center rounded-full text-[10px] bg-slate-200/90 ">
-                  1
-                </p>
+                <Link to={"/cart"} className="">
+                  <IoCartOutline className="text-5xl cursor-pointer " />
+                  <p className="absolute top-1 right-0 border-[2px] border-white  w-[1rem] text-center rounded-full text-[10px] bg-slate-200/90 ">
+                    1
+                  </p>
+                </Link>
               </div>
 
               {/* login container */}
               {userStatus ? (
-                <FaRegUserCircle className="text-4xl cursor-pointer hover:text-green-400 ease-linear duration-300" />
+                <Link className="rounded-full" to={"../user/dashboard"}>
+                  <FaRegUserCircle className="text-4xl cursor-pointer hover:text-green-400 ease-linear duration-300" />
+                </Link>
               ) : (
                 <button className="py-2 px-4 font-bold bg-green-500  md:text-xl text-white rounded text-center">
                   <a href="/login"> Login</a>
