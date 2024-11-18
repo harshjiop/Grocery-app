@@ -61,7 +61,10 @@ function MobileNav() {
         {/* Accounts */}
         <li className="w-full flex justify-end items-center ">
           <Link
-            onClick={() => setIsMobileNavActive(!isMobileNavActive)}
+            onClick={() => {
+              setIsMobileNavActive(!isMobileNavActive);
+              setMenu(2);
+            }}
             to={"/user/accounts"}
             className="flex items-center justify-start gap-1 w-[65%]"
           >
@@ -73,7 +76,10 @@ function MobileNav() {
         {/* Orders */}
         <li className="w-full  flex justify-end items-center">
           <Link
-            onClick={() => setIsMobileNavActive(!isMobileNavActive)}
+            onClick={() => {
+              setIsMobileNavActive(!isMobileNavActive);
+              setMenu(3);
+            }}
             to={"/user/orders"}
             className="flex items-center justify-start gap-1 w-[65%]"
           >
@@ -85,7 +91,10 @@ function MobileNav() {
         {/* Cards */}
         <li className="w-full flex justify-end items-center">
           <Link
-            onClick={() => setIsMobileNavActive(!isMobileNavActive)}
+            onClick={() => {
+              setIsMobileNavActive(!isMobileNavActive);
+              setMenu(4);
+            }}
             to={"/user/cards"}
             className="flex items-center justify-start gap-1 w-[65%]"
           >
@@ -97,7 +106,10 @@ function MobileNav() {
         {/* Settings */}
         <li className="w-full flex justify-end items-center">
           <Link
-            onClick={() => setIsMobileNavActive(!isMobileNavActive)}
+            onClick={() => {
+              setIsMobileNavActive(!isMobileNavActive);
+              setMenu(5);
+            }}
             to={"/user/settings"}
             className="flex items-center justify-start gap-1  w-[65%]"
           >

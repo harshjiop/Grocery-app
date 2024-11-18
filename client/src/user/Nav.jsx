@@ -12,16 +12,16 @@ import React, { useEffect, useState, useContext } from "react";
 import { PcNavContext } from "./UserLayout";
 
 function Nav() {
-  const [menu, setMenu] = useState(() => {
-    const localUserMenu = localStorage.getItem("userMenu");
-    return localUserMenu ? Number(localUserMenu) : 0;
-  });
+  // const [menu, setMenu] = useState(() => {
+  //   const localUserMenu = localStorage.getItem("userMenu");
+  //   return localUserMenu ? Number(localUserMenu) : 0;
+  // });
 
-  useEffect(() => {
-    localStorage.setItem("userMenu", JSON.stringify(menu));
-  }, [menu]);
+  // useEffect(() => {
+  //   localStorage.setItem("userMenu", JSON.stringify(menu));
+  // }, [menu]);
 
-  // const { menu, setMenu } = useContext(PcNavContext);
+  const { menu, setMenu } = useContext(PcNavContext);
 
   return (
     <div className=" h-full  flex flex-col justify-start items-center gap-8 selection:bg-transparent">

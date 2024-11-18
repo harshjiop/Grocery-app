@@ -10,14 +10,16 @@ export const PcNavContext = createContext();
 function UserLayout() {
   const [isMobileNavActive, setIsMobileNavActive] = useState(false);
 
-  const [menu, setMenu] = useState(() => {
-    const localUserMenu = localStorage.getItem("userMenu");
+  // const [menu, setMenu] = useState(() => {
+  //   const localUserMenu = localStorage.getItem("userMenu");
 
-    return localUserMenu ? Number(localUserMenu) : 0;
-  });
+  //   return localUserMenu ? Number(localUserMenu) : 0;
+  // });
+
+  const [menu, setMenu] = useState(0);
 
   useEffect(() => {
-    console.log('testify',menu)
+    console.log("testify", menu);
     localStorage.setItem("userMenu", JSON.stringify(menu));
   }, [menu]);
 
@@ -27,13 +29,13 @@ function UserLayout() {
 
   return (
     // wrapper
-    <>
+    <PcNavContext.Provider value={{ menu, setMenu }}>
       <div className="w-screen h-screen  flex justify-between items-center border  relative">
         {/* nav bar wrapper*/}
         <div className="h-full hidden md:inline  w-[15%]">
-          <PcNavContext.Provider value={{ menu, setMenu }}>
+          <>
             <Nav />
-          </PcNavContext.Provider>
+          </>
         </div>
 
         <div
@@ -73,7 +75,7 @@ function UserLayout() {
           </MobileNavContext.Provider>
         </div>
       </div>
-    </>
+    </PcNavContext.Provider>
   );
 }
 
