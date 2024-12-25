@@ -7,6 +7,7 @@ import {
   IoClose,
   FaRegUserCircle,
   MdLogout,
+  CgMoreVertical 
 } from "../icons/index";
 import { useDispatch, useSelector } from "react-redux";
 import { login, logout } from "../store/authSlice";
@@ -142,8 +143,22 @@ export default function Home() {
               />
 
               {/* categories dropdown */}
-              <div className="w-[20%] xl:text-sm  text-[10px] text-center">
-                All Categories
+              <div className="w-[20%] xl:text-sm  text-[10px] text-center flex">
+                <div className="border border-slate-400 rounded-xl "></div>
+                {/* All Categories */}
+                <select
+                  className="outline-none font-semibold "
+                  name="dropdown_menu"
+                  id="dropdown_menu"
+                >
+                  <option className="" value="C1" selected disabled>
+                    All Categories
+                  </option>
+                  <option value="C2">Category 2</option>
+                  <option value="C3">Category 3</option>
+                  <option value="C4">Category 4</option>
+                  <option value="C5">Category 5</option>
+                </select>
               </div>
 
               {/* search button */}
@@ -270,12 +285,19 @@ export default function Home() {
                   "url(https://images.unsplash.com/photo-1629665001701-a232a0ba4eec?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)",
               }}
             ></SwiperSlide>
+            <SwiperSlide
+              className="bg-no-repeat bg-cover bg-center"
+              style={{
+                backgroundImage:
+                  "url(https://images.unsplash.com/photo-1533765123064-e89276661171?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)",
+              }}
+            ></SwiperSlide>
           </Swiper>
         </div>
       </div>
 
       {/* product categories container */}
-      <div className="h-screen w-full border border-transparent z-0">
+      <div className="h-screen w-full border border-transparent z-0 selection:bg-transparent  ">
         {/* product category upper menu */}
         <div className="md:w-[80%] w-[95%] h-[20%] border-2 mx-auto mt-10 mb-4 flex justify-between items-center  ">
           {/* category 1 */}
@@ -476,7 +498,7 @@ export default function Home() {
         {/* category content */}
         <div className=" w-[80%] mx-auto h-[70%]">
           {/* card container */}
-          <div className=" h-full w-full flex flex-wrap items-start justify-between">
+          <div className=" h-[94%] w-full flex flex-wrap items-start justify-between ">
             {products[category].items.map((data, index) => (
               <a
                 key={index}
@@ -497,6 +519,13 @@ export default function Home() {
             ))}
 
             {/* card 1 */}
+          </div>
+
+          <div className="h-[6%] flex justify-end">
+            <Link className="md:w-52 w-full text-center h-full bg-green-400 hover:bg-black hover:text-green-400 text-white flex justify-center items-center rounded hover:rounded-2xl ease-linear duration-200">
+            <h4 className="font-semibold">See More</h4>
+            <CgMoreVertical className="font-semibold" />
+            </Link>
           </div>
         </div>
       </div>
