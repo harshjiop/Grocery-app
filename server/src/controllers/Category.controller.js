@@ -43,6 +43,10 @@ const updateCategory = asyncHandler(async (req, res) => {
   if (!categoryOwner) {
     throw new ApiError(404, "Category does not exist");
   }
+  console.log("categoryId", categoryId);
+  console.log("name", name);
+  console.log("owner", owner);
+  console.log("categoryOwner", categoryOwner);
 
   if (categoryOwner.owner.valueOf() === owner.valueOf()) {
     const category = await Category.findByIdAndUpdate(
@@ -56,10 +60,12 @@ const updateCategory = asyncHandler(async (req, res) => {
     );
     return res
       .status(200)
-      .json(new ApiResponse(200, category, "Category updated successfully"));
+      .json(new ApiResponse(200,  "Category updated successfully"));
   } else {
     throw new ApiError(404, "Somthing went Wrong");
   }
+
+ 
 });
 
 const deleteCategory = asyncHandler(async (req, res) => {
