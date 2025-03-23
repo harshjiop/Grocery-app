@@ -16,6 +16,7 @@ import { ResetPasswordTemplate } from "../utils/EmailTemplate/ResetPasswordTempl
 import { PasswordUpdateTemplate } from "../utils/EmailTemplate/PasswordUpdateTemplate.js";
 import { AccountVerifactionSucessFull } from "../utils/EmailTemplate/AccountVerifactionSucessFull.js";
 import { AddMinutesToDate, generateOTP } from "../utils/Otpgenrate.js";
+import { log } from "console";
 
 const options = {
   httpOnly: true,
@@ -24,6 +25,7 @@ const options = {
 
 const registerUser = asyncHandler(async (req, res) => {
   const { firstName, lastName, email, mobile_number, password } = req.body;
+  console.log(firstName, lastName, email, mobile_number, password);
 
   if (!firstName || !lastName || !email || !mobile_number || !password) {
     throw new ApiError(400, "All fields are required");
@@ -204,9 +206,10 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 });
 
 const updateAccountDetails = asyncHandler(async (req, res) => {
-  const { fullName, email, bio } = req.body;
+  // const { fullName, email, bio } = req.body;
+  const { firstName, lastName, mobile_number } = req.body;
 
-  if (!fullName || !email) {
+  if (!firstName && !lastName && !mobile_number) {
     throw new ApiError(400, "All fields are required");
   }
 
@@ -214,9 +217,9 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
     req.user?._id,
     {
       $set: {
-        fullName,
-        email,
-        bio,
+        firstName,
+        lastName,
+        mobile_number,
       },
     },
     { new: true }
@@ -234,9 +237,11 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Avatar file is missing");
   }
   const Get_User_avtar = await User.findById(req.user);
+
   const deleteCloudanariy = await deleteFromCloudinary(
     Get_User_avtar?.avatar?.public_id
   );
+
   const avatar = await uploadOnCloudinary(avatarLocalPath);
 
   if (!avatar.url) {
