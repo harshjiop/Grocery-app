@@ -13,5 +13,8 @@ import { TbTransactionRupee, } from "react-icons/tb";
 
 import { RxHamburgerMenu,RxCross2  } from "react-icons/rx";
 
+import { CgMoreVertical } from "react-icons/cg";
 
-export { HiSearch, IoHeartOutline, IoCartOutline, IoFastFoodSharp, IoIosArrowForward, IoMenu, IoClose, FaRegUserCircle, MdLogout, IoIosArrowBack, FaRegTrashCan, MdHomeFilled, TbTransactionRupee, MdAccountCircle, MdShoppingCart, MdCreditCard, MdSettings,MdOutlineSettings,LuBellDot,MdOutlineHome,RxHamburgerMenu,RxCross2    }
+
+
+export { HiSearch, IoHeartOutline, IoCartOutline, IoFastFoodSharp, IoIosArrowForward, IoMenu, IoClose, FaRegUserCircle, MdLogout, IoIosArrowBack, FaRegTrashCan, MdHomeFilled, TbTransactionRupee, MdAccountCircle, MdShoppingCart, MdCreditCard, MdSettings,MdOutlineSettings,LuBellDot,MdOutlineHome,RxHamburgerMenu,RxCross2,CgMoreVertical }
